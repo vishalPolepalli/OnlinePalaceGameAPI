@@ -1,5 +1,5 @@
-from typing import List, Optional, Any
-
+from random import random
+from typing import List, Optional, Any, Dict
 from .models import Card, PlayerState, GameState, Suit, Rank, GamePhase
 
 PALACE_VALUES = {
@@ -41,3 +41,29 @@ class Player:
             face_up=self.face_up,
             face_down_count=len(self.face_down)
          )
+
+class Game:
+    def __init__(self, game_id: str, first_player: Player):
+        self.game_id: str = game_id
+        self.players: Dict[str, Player] = {first_player.id: first_player}
+        self.player_order: List[str] = [first_player.id]
+        self.deck: List[Card] = self._create_deck()
+        self.pile: List[Card] = []
+        self.current_player_index: Optional[int] = None
+        self.phase: GamePhase = GamePhase.WAITING_FOR_PLAYERS
+        self.winner_id: Optional[str] = None
+        self.last_action: Optional[str] = "Game created"
+
+    def _create_deck(self) -> List[Card]:
+        deck = [Card(rank=r, suit=s) for r in Rank for s in Suit]
+        random.shuffle(deck)
+        return deck
+
+    def add_player(self, player: Player):
+        if self.phase != GamePhase.WAITING_FOR_PLAYERS:
+            return
+        if len(self.players) >= 4:
+             return
+        self.players[player.id] = player
+        self.player_order.append(player.id)
+        self.last_action = f"{player.name} joined the game."
