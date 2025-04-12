@@ -36,6 +36,12 @@ class Card(BaseModel):
             return NotImplemented
         return self.rank == other.rank and self.suit == other.suit
 
+    def __lt__(self, other):
+        rank_order = list(Rank)
+        if not isinstance(other, Card):
+            return NotImplemented
+        return rank_order.index(self.rank) < rank_order.index(other.rank)
+
 # MARK: Player
 class PlayerState(BaseModel):
     id: str
