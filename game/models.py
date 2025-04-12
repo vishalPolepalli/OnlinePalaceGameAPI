@@ -1,7 +1,6 @@
 from enum import Enum
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, Field
-
 
 # MARK: Card
 class Suit(str, Enum):
@@ -44,3 +43,19 @@ class PlayerState(BaseModel):
     hand: List[Card] = Field(default_factory=list)
     face_up: List[Card] = Field(default_factory=list)
     face_down_count: int = 0
+
+# MARK: Game
+class GamePhase(str, Enum):
+    WAITING_FOR_PLAYERS = "WAITING_FOR_PLAYERS"
+    PLAYING = "PLAYING"
+    FINISHED = "FINISHED"
+
+class GameState(BaseModel):
+    game_id: str
+    players: List[PlayerState] = Field(default_factory=list)
+    pile: List[Card] = Field(default_factory=list)
+    deck_size: int = 0
+    current_player_id: Optional[str] = None
+    phase: GamePhase = GamePhase.WAITING_FOR_PLAYERS
+    winner_id: Optional[str] = None
+    last_action: Optional[str] = None
