@@ -1,8 +1,9 @@
 from enum import Enum
-from pydantic import BaseModel
+from typing import List
+from pydantic import BaseModel, Field
 
 
-# MARK: Card Representation
+# MARK: Card
 class Suit(str, Enum):
     HEARTS = "H"
     CLUBS = "C"
@@ -35,3 +36,11 @@ class Card(BaseModel):
         if not isinstance(other, Card):
             return NotImplemented
         return self.rank == other.rank and self.suit == other.suit
+
+# MARK: Player
+class PlayerState(BaseModel):
+    id: str
+    name: str
+    hand: List[Card] = Field(default_factory=list)
+    face_up: List[Card] = Field(default_factory=list)
+    face_down_count: int = 0
