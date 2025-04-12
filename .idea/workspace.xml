@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1a30e6fd-5e89-4bbe-9aa6-23d114e589bb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/game/logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/game/logic.py" afterDir="false" />
-    </list>
+    <list default="true" id="1a30e6fd-5e89-4bbe-9aa6-23d114e589bb" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -86,7 +84,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1744478632082</updated>
-      <workItem from="1744478633168" duration="2342000" />
+      <workItem from="1744478633168" duration="2635000" />
     </task>
     <servers />
   </component>
