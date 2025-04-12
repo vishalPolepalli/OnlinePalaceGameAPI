@@ -21,4 +21,6 @@ class GameManager:
         self.active_games[game_id] = game
         print(f"Game created: {game_id} by Player {player.name} ({player_id})")
         return game, player_id
-    
+
+# Singleton to manage all games
+game_manager = GameManager()

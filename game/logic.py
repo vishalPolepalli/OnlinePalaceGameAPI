@@ -1,4 +1,4 @@
-from random import random
+import random
 from typing import List, Optional, Any, Dict
 from game.models import *
 
