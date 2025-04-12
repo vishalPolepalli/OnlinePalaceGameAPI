@@ -77,4 +77,20 @@ class Game:
             for player in self.player_order:
                 if self.deck:
                     self.players[player].face_down.append(self.deck.pop())
-        
+        # Deal Face Up Cards
+        for _ in range(3):
+            for player in self.player_order:
+                if self.deck:
+                    self.players[player].face_up.append(self.deck.pop())
+        # Deal Hand Cards
+        for _ in range(3):
+            for player in self.player_order:
+                if self.deck:
+                    self.players[player].hand.append(self.deck.pop())
+        for player in self.players.values():
+            player.sort_hand()
+
+        # TODO: Implement logic for determining starting player based on face up cards
+        self.current_player_index = 0
+        self.phase = GamePhase.PLAYING
+        self.last_action = "Dealing complete. Game starts."
