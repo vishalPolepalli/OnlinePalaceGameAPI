@@ -1,6 +1,6 @@
 from random import random
 from typing import List, Optional, Any, Dict
-from .models import Card, PlayerState, GameState, Suit, Rank, GamePhase
+from game.models import Card, PlayerState, Suit, Rank, GamePhase
 
 PALACE_VALUES = {
     Rank.TWO: 2, Rank.THREE: 3, Rank.FOUR: 4, Rank.FIVE: 5, Rank.SIX: 6,
@@ -67,3 +67,14 @@ class Game:
         self.players[player.id] = player
         self.player_order.append(player.id)
         self.last_action = f"{player.name} joined the game."
+
+    def deal_cards(self):
+        number_players = len(self.players)
+        if number_players < 2 or number_players > 5:
+            return # invalid amount of players
+        # Deal Face Down Cards
+        for _ in range(3):
+            for player in self.player_order:
+                if self.deck:
+                    self.players[player].face_down.append(self.deck.pop())
+        
