@@ -47,23 +47,23 @@ class Game:
         self.game_id: str = game_id
         self.players: Dict[str, Player] = {first_player.id: first_player}
         self.player_order: List[str] = [first_player.id]
-        self.deck: List[Card] = self._create_deck()
+        self.deck: List[Card] = self.create_deck()
         self.pile: List[Card] = []
         self.current_player_index: Optional[int] = None
         self.phase: GamePhase = GamePhase.WAITING_FOR_PLAYERS
         self.winner_id: Optional[str] = None
         self.last_action: Optional[str] = "Game created"
 
-    def _create_deck(self) -> List[Card]:
+    def create_deck(self) -> List[Card]:
         deck = [Card(rank=r, suit=s) for r in Rank for s in Suit]
         random.shuffle(deck)
         return deck
 
     def add_player(self, player: Player):
         if self.phase != GamePhase.WAITING_FOR_PLAYERS:
-            return
-        if len(self.players) >= 4:
-             return
+            raise Exception("Cannot add a player to a game that has started")
+        if len(self.players) >= 5:
+             raise Exception("Cannot add a player if there as game is at it's max of 5 players ")
         self.players[player.id] = player
         self.player_order.append(player.id)
         self.last_action = f"{player.name} joined the game."
