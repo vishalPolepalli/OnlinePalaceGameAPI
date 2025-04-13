@@ -1,5 +1,4 @@
-from fastapi import APIRouter, HTTPException, WebSocket
-from starlette.websockets import WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from api.models import *
 from game.manager import game_manager
@@ -29,7 +28,7 @@ async def join_game(game_id: str, request: JoinGameRequest):
         raise HTTPException(status_code=500, detail=f"Failed to join game: {e}")
 
 @router.get("/games/{game_id}/players", response_model=GetPlayersResponse)
-async def get_game(game_id: str):
+async def get_game_players(game_id: str):
     try:
         game = game_manager.get_game(game_id)
         return GetPlayersResponse(players= game.players.keys())
