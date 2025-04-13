@@ -1,5 +1,6 @@
 from typing import List, Dict, Any
 from pydantic import BaseModel
+from enum import Enum
 
 # --- API Request/Response Models ---
 class CreateGameRequest(BaseModel):
