@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from api.routes import router as game_router # Import the router
-
 app = FastAPI(
     title="Palace Card Game Backend",
     description="API and WebSocket server for a multiplayer Palace game.",

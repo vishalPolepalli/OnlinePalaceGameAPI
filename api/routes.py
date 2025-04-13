@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, WebSocket
 from api.models import *
 from game.manager import game_manager
 
@@ -28,3 +28,23 @@ async def get_game(game_id: str):
         return GetPlayersResponse(players= game.players.keys())
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get players for game: {e}")
+
+@router.websocket("/ws/game/{game_id}/{player_id}")
+async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str):
+    try:
+        game = game_manager.get_game(game_id)
+        player = game.players.get(player_id)
+        if not player:
+            await websocket.close(code=1008, reason="Player not found in game: {game_id}")
+            return
+
+        await websocket.accept()
+        game_manager.connect_websocket(game_id=game_id, player_id=player_id, websocket=websocket)
+
+
+    except Exception as e:
+        print(f"Error during WebSocket connection setup for {player_id} in {game_id}: {e}")
+        try:
+             await websocket.close(code=1011)
+        except:
+             pass

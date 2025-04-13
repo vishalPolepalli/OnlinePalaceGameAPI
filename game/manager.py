@@ -37,6 +37,14 @@ class GameManager:
         game.add_player(player)
         return JoinGameResponse(player_id=player_id)
 
+    def connect_websocket(self, game_id: str, player_id: str, websocket: WebSocket):
+        game = self.get_game(game_id)
+        player = game.players.get(player_id)
+        if not player:
+            raise Exception(f"No player found")
+        player.websocket = websocket
+        self.player_connections[player_id] = websocket
+        print(f"WebSocket connected for Player {player.name} ({player_id}) in game {game_id}")
 
 # Singleton to manage all games
 game_manager = GameManager()
