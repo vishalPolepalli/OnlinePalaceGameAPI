@@ -1,11 +1,9 @@
 import uuid
 from typing import Dict, Optional
 from fastapi import WebSocket
-
-from api.models import JoinGameResponse
 from game.logic import Game, Player
 from api.models import *
-
+from game.models import GamePhase
 
 class GameManager:
     def __init__(self):
@@ -25,7 +23,7 @@ class GameManager:
         return game, player_id
 
     def get_game(self, game_id: str) -> Optional[Game]:
-        game = self.active_games.get(game_id)
+        game = self.active_games.get(game_id.lower())
         if not game:
             raise Exception(f"No game with id {game_id} found")
         return game
@@ -45,6 +43,31 @@ class GameManager:
         player.websocket = websocket
         self.player_connections[player_id] = websocket
         print(f"WebSocket connected for Player {player.name} ({player_id}) in game {game_id}")
+
+    async def broadcast(self, game_id: str, message: Dict):
+        game = self.get_game(game_id)
+        websockets = [p.websocket for p in game.players.values() if p.websocket]
+        for websocket in websockets:
+            try:
+                await websocket.send_json(message)
+            except Exception as e:
+                print(f"Error sending message to a websocket in game {game_id}: {e}")
+
+    async def broadcast_game_state(self, game_id: str):
+        game = self.get_game(game_id)
+
+        message_type = "GAME_UPDATE"
+        if game.phase == GamePhase.FINISHED:
+            message_type = "GAME_FINISHED"
+
+        for player in game.players.values():
+            if player.websocket:
+                state = game.get_game_status(perspective_player_id=player.id)
+                message = WebSocketMessageOut(type=message_type, payload=state.model_dump())
+                try:
+                    await player.websocket.send_json(message.model_dump())
+                except Exception as e:
+                    print(f"Error sending state for player {player.id} in game {game_id}: {e}")
 
 # Singleton to manage all games
 game_manager = GameManager()

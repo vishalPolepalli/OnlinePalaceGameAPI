@@ -1,8 +1,5 @@
-from typing import List
+from typing import List, Dict, Any
 from pydantic import BaseModel
-
-from game.logic import Player
-
 
 # --- API Request/Response Models ---
 class CreateGameRequest(BaseModel):
@@ -23,3 +20,7 @@ class JoinGameResponse(BaseModel):
 
 class GetPlayersResponse(BaseModel):
     players: List[str]
+
+class WebSocketMessageOut(BaseModel):
+    type: str # e.g., "GAME_UPDATE", "ERROR", "YOUR_TURN", "PLAYER_JOINED"
+    payload: Dict[str, Any]

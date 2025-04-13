@@ -1,4 +1,6 @@
 from fastapi import APIRouter, HTTPException, WebSocket
+from starlette.websockets import WebSocketDisconnect
+
 from api.models import *
 from game.manager import game_manager
 
@@ -7,7 +9,7 @@ router = APIRouter()
 @router.post("/games", response_model=CreateGameResponse, status_code=201)
 async def create_game(request: CreateGameRequest):
     game, player_id = game_manager.create_game(request)
-    return CreateGameResponse(game_id= game.game_id, player_id=player_id)
+    return CreateGameResponse(game_id= game.game_id.upper(), player_id=player_id)
 
 @router.get("/games", response_model=GetGamesResponse)
 async def get_games():
@@ -17,6 +19,11 @@ async def get_games():
 async def join_game(game_id: str, request: JoinGameRequest):
     try:
         response = game_manager.add_player_to_game(game_id=game_id, player_name=request.player_name)
+
+        message = WebSocketMessageOut(type="PLAYER_JOINED", payload= {"player_name": request.player_name})
+        await game_manager.broadcast(game_id=game_id, message=message.model_dump())
+        await game_manager.broadcast_game_state(game_id=game_id)
+
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to join game: {e}")
@@ -42,7 +49,14 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         game_manager.connect_websocket(game_id=game_id, player_id=player_id, websocket=websocket)
 
         initial_state=game.get_game_status(perspective_player_id=player_id)
-        await websocket.send_json(initial_state.model_dump())
+        message = WebSocketMessageOut(type="CONNECTION_ESTABLISHED", payload=initial_state.model_dump())
+        await websocket.send_json(message.model_dump())
+
+        try:
+            while True:
+                data = await websocket.receive_json()
+        except WebSocketDisconnect:
+            print(f"WebSocket disconnected for Player {player_id} in game {game_id}")
 
     except Exception as e:
         print(f"Error during WebSocket connection setup for {player_id} in {game_id}: {e}")
