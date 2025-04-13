@@ -37,7 +37,7 @@ class Player:
          return PlayerState(
             id=self.id,
             name=self.name,
-            hand=[Card(rank=Rank.TWO, suit=Suit.HEARTS)] * len(self.hand),
+            hand=[],
             face_up=self.face_up,
             face_down_count=len(self.face_down)
          )
@@ -67,6 +67,12 @@ class Game:
         self.players[player.id] = player
         self.player_order.append(player.id)
         self.last_action = f"{player.name} joined the game."
+
+    def get_current_player(self) -> Optional[Player]:
+        if self.current_player_index is None:
+            return None
+        player_id = self.player_order[self.current_player_index]
+        return self.players[player_id]
 
     def deal_cards(self):
         number_players = len(self.players)

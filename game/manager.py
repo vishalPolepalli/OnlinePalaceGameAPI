@@ -44,11 +44,11 @@ class GameManager:
         self.player_connections[player_id] = websocket
         print(f"WebSocket connected for Player {player.name} ({player_id}) in game {game_id}")
 
-    def disconnect_websocket(self, game_id: str, player_id: str):
+    async def disconnect_websocket(self, game_id: str, player_id: str):
         game = self.get_game(game_id)
         player = game.players.get(player_id)
         if player:
-            player.websocket.close()
+            await player.websocket.close()
             player.websocket = None
             print(f"WebSocket disconnected for Player {player_id} in game {game_id}")
         if player_id in self.player_connections:
