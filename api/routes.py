@@ -73,6 +73,11 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         try:
             while True:
                 data = await websocket.receive_json()
+                message = WebSocketMessageIn(**data)
+
+                if message.action_type == ActionType.PICK_UP_PILE:
+                    game.pick_up_pile(player_id=player_id)
+
         except WebSocketDisconnect:
             print(f"WebSocket disconnected for Player {player_id} in game {game_id}")
             await game_manager.disconnect_websocket(game_id=game_id, player_id=player_id)

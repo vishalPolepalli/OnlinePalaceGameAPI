@@ -101,6 +101,18 @@ class Game:
         self.phase = GamePhase.PLAYING
         self.last_action = "Dealing complete. Game starts."
 
+    def pick_up_pile(self, player_id: str):
+        player = self.players[player_id]
+        player.hand.extend(self.pile)
+        self.pile.clear()
+
+        player.sort_hand()
+        self.next_turn()
+        self.last_action = f"{player.name} Picked up the pile."
+
+    def next_turn(self):
+        self.current_player_index = (self.current_player_index + 1) % len(self.players)
+
     def get_game_status(self, perspective_player_id: Optional[str] = None) -> GameState:
         player_states = []
         for player_id, player in self.players.items():

@@ -24,3 +24,11 @@ class GetPlayersResponse(BaseModel):
 class WebSocketMessageOut(BaseModel):
     type: str # e.g., "GAME_UPDATE", "ERROR", "YOUR_TURN", "PLAYER_JOINED"
     payload: Dict[str, Any]
+
+class ActionType(str, Enum):
+    PLAY_CARD = "PLAY_CARD"
+    PICK_UP_PILE = "PICK_UP_PILE"
+
+class WebSocketMessageIn(BaseModel):
+    type: ActionType
+    payload: Dict[str, Any]
