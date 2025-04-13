@@ -41,6 +41,8 @@ async def websocket_endpoint(websocket: WebSocket, game_id: str, player_id: str)
         await websocket.accept()
         game_manager.connect_websocket(game_id=game_id, player_id=player_id, websocket=websocket)
 
+        initial_state=game.get_game_status(perspective_player_id=player_id)
+        await websocket.send_json(initial_state.model_dump())
 
     except Exception as e:
         print(f"Error during WebSocket connection setup for {player_id} in {game_id}: {e}")

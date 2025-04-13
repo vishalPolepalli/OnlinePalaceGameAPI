@@ -94,3 +94,21 @@ class Game:
         self.current_player_index = 0
         self.phase = GamePhase.PLAYING
         self.last_action = "Dealing complete. Game starts."
+
+    def get_game_status(self, perspective_player_id: Optional[str] = None) -> GameState:
+        player_states = []
+        for player_id, player in self.players.items():
+            if perspective_player_id is None or player.id == perspective_player_id:
+                player_states.append(player.get_state())
+            else:
+                player_states.append(player.get_hidden_state())
+        return GameState(
+            game_id=self.game_id,
+            players=player_states,
+            pile=self.pile,
+            deck_size=len(self.deck),
+            current_player_id= self.player_order[self.current_player_index] if self.current_player_index is not None else None,
+            phase=self.phase,
+            winner_id=self.winner_id,
+            last_action=self.last_action,
+        )
