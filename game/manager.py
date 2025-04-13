@@ -30,6 +30,8 @@ class GameManager:
 
     def add_player_to_game(self, game_id: str, player_name: str) -> Optional[JoinGameResponse]:
         game = self.get_game(game_id)
+        if game.phase == GamePhase.PLAYING:
+            raise Exception(f"Cannot join while game {game_id} is currently playing")
         player_id = str(uuid.uuid4())
         player = Player(id=player_id, name=player_name)
         game.add_player(player)
