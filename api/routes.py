@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
 from api.models import *
 from game.manager import game_manager
+from game.models import GamePhase
 
 router = APIRouter()
 
@@ -18,10 +19,10 @@ async def get_games():
 async def join_game(game_id: str, request: JoinGameRequest):
     try:
         response = game_manager.add_player_to_game(game_id=game_id, player_name=request.player_name)
-
-        message = WebSocketMessageOut(type="PLAYER_JOINED", payload= {"player_name": request.player_name})
+        player = game_manager.get_game(game_id).players[response.player_id].get_hidden_state()
+        message = WebSocketMessageOut(type="PLAYER_JOINED", payload= {"new_player": player.model_dump()})
         await game_manager.broadcast(game_id=game_id, message=message.model_dump())
-        await game_manager.broadcast_game_state(game_id=game_id)
+        # await game_manager.broadcast_game_state(game_id=game_id) not sure if this is needed yet
 
         return response
     except Exception as e:
@@ -40,6 +41,7 @@ async def start_game(game_id: str):
     try:
         game = game_manager.get_game(game_id)
         game.deal_cards()
+        game.phase = GamePhase.STARTED
 
         # send message to all players that game has started
         await game_manager.broadcast_game_state(game_id=game_id)
@@ -47,7 +49,7 @@ async def start_game(game_id: str):
         # send message to current player it's their turn
         current_player = game.get_current_player()
         if current_player and current_player.websocket:
-            message = WebSocketMessageOut(type="YOUR TURN", payload= {})
+            message = WebSocketMessageOut(type="YOUR_TURN", payload= {})
             await current_player.websocket.send_json(message.model_dump())
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to start game {game_id}: {e}")

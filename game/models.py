@@ -53,6 +53,7 @@ class PlayerState(BaseModel):
 # MARK: Game
 class GamePhase(str, Enum):
     WAITING_FOR_PLAYERS = "WAITING_FOR_PLAYERS"
+    STARTED = "STARTED"
     PLAYING = "PLAYING"
     FINISHED = "FINISHED"
 

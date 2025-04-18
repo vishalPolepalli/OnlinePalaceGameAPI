@@ -73,6 +73,8 @@ class GameManager:
         message_type = "GAME_UPDATE"
         if game.phase == GamePhase.FINISHED:
             message_type = "GAME_FINISHED"
+        elif game.phase == GamePhase.STARTED:
+            message_type = "GAME_STARTED"
 
         for player in game.players.values():
             if player.websocket:
